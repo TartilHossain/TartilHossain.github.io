@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TARTIL APP STORE</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #1a73e8;
+            --dark-blue: #0d47a1;
+            --light-blue: #e8f0fe;
+            --white: #ffffff;
+            --gray: #f5f5f5;
+            --dark-gray: #757575;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--white);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+            background-size: 200% 200%;
+            animation: gradientBG 5s ease infinite;
+            color: var(--white);
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Search Bar */
+        .search-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: var(--white);
+            border-radius: 30px;
+            padding: 0.5rem 1rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .search-bar:focus-within {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .search-bar input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 0.8rem;
+            font-size: 1rem;
+            background: transparent;
+        }
+
+        .search-bar i {
+            color: var(--dark-gray);
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        /* Apps Grid */
+        .apps-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+            flex: 1;
+        }
+
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .app-card {
+            background-color: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .app-poster {
+            width: 100%;
+            height: 180px;
+            object-fit: contain;
+            background-color: var(--gray);
+            padding: 1rem;
+        }
+
+        .app-info {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark-blue);
+        }
+
+        .app-category {
+            display: inline-block;
+            background-color: var(--light-blue);
+            color: var(--primary-blue);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+
+        .app-description {
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            flex: 1;
+        }
+
+        .app-downloads {
+            display: flex;
+            align-items: center;
+            color: var(--dark-gray);
+            font-size: 0.8rem;
+        }
+
+        .app-downloads i {
+            margin-right: 0.3rem;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+            gap: 0.5rem;
+        }
+
+        .pagination button {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pagination button:hover {
+            background-color: var(--dark-blue);
+        }
+
+        .pagination button.active {
+            background-color: var(--dark-blue);
+            font-weight: bold;
+        }
+
+        .pagination button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark-blue);
+            color: var(--white);
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: auto;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            animation: fadeInDown 0.5s;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark-gray);
+        }
+
+        .download-btn {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            margin-top: 1.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .download-btn:hover {
+            background-color: var(--dark-blue);
+        }
+
+        /* Passkey Modal */
+        .passkey-input {
+            width: 100%;
+            padding: 0.8rem;
+            margin: 1rem 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .payment-instruction {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .apps-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .apps-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="animate__animated animate__fadeIn">
+        <h1>TARTIL APP STORE</h1>
+    </header>
+
+    <div class="search-container">
+        <div class="search-bar animate__animated animate__fadeIn animate__delay-1s">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search apps...">
+        </div>
+    </div>
+
+    <div class="apps-container">
+        <div id="appsGrid" class="apps-grid"></div>
+        
+        <div class="pagination">
+            <button id="prevPage" disabled><i class="fas fa-chevron-left"></i></button>
+            <span id="pageInfo">Page 1 of 1</span>
+            <button id="nextPage" disabled><i class="fas fa-chevron-right"></i></button>
+        </div>
+    </div>
+
+    <footer>
+        <p>Site owner: Tartil Hossain</p>
+    </footer>
+
+    <!-- Download Modal -->
+    <div id="downloadModal" class="modal">
+        <div class="modal-content animate__animated animate__fadeInUp">
+            <span class="close-btn">&times;</span>
+            <img id="modalAppPoster" src="" alt="App Poster" style="width: 100px; height: 100px; object-fit: contain; margin: 0 auto 1rem;">
+            <h2 id="modalAppTitle"></h2>
+            <p id="modalAppDescription"></p>
+            <p><strong>Downloads: </strong><span id="modalAppDownloads"></span></p>
+            <a id="modalDownloadLink" href="#" target="_blank" class="download-btn">Download</a>
+        </div>
+    </div>
+
+    <!-- Passkey Modal -->
+    <div id="passkeyModal" class="modal" style="display: flex;">
+        <div class="modal-content animate__animated animate__fadeInUp">
+            <h2>Enter Passkey</h2>
+            <p>Please enter the passkey to access the app store</p>
+            <input type="password" id="passkeyInput" class="passkey-input" placeholder="Enter passkey">
+            <button id="submitPasskey" class="download-btn">Submit</button>
+            <p class="payment-instruction">Pay to the number 01715783544 (TARTIL) to get passkey</p>
+        </div>
+    </div>
+
+    <script>
+        // App Data
+        const appsData = [
+            {
+                id: 2,
+                title: "Truecaller",
+                category: "Communication",
+                poster: "https://filecr.com/_next/image/?url=https%3A%2F%2Fmedia.imgcdn.org%2Frepo%2F2023%2F03%2Ftruecaller%2F660ecc1758bd5-truecaller-Icon.webp&w=128&q=75",
+                downloadLink: "https://filenext.org/c5ecdea3e1e419a6?ref=9218ccb6b1b65f7e4a31fa79909613d9",
+                description: "Caller ID, spam blocking & call recording",
+                downloads: "500M+"
+            },
+            {
+                id: 1,
+                title: "Spotify",
+                category: "Music",
+                poster: "https://filecr.com/_next/image/?url=https%3A%2F%2Fmedia.imgcdn.org%2Frepo%2F2023%2F03%2Fspotify-music-and-podcasts%2F663c5e24e7a15-spotify-music-and-podcasts-Icon.webp&w=128&q=75",
+                downloadLink: "https://filenext.org/4e67532265a45776?ref=69194501016626e4bc40b8aae2cb588d",
+                description: "Music and podcasts streaming platform",
+                downloads: "1B+"
+            }
+        ];
+
+        // DOM Elements
+        const appsGrid = document.getElementById('appsGrid');
+        const searchInput = document.getElementById('searchInput');
+        const prevPageBtn = document.getElementById('prevPage');
+        const nextPageBtn = document.getElementById('nextPage');
+        const pageInfo = document.getElementById('pageInfo');
+        const downloadModal = document.getElementById('downloadModal');
+        const passkeyModal = document.getElementById('passkeyModal');
+        const passkeyInput = document.getElementById('passkeyInput');
+        const submitPasskey = document.getElementById('submitPasskey');
+
+        // Pagination Variables
+        let currentPage = 1;
+        const appsPerPage = 6;
+        let filteredApps = [...appsData];
+
+        // Check if access is already granted
+        const hasAccess = localStorage.getItem('appStoreAccess') === 'granted';
+
+        if (!hasAccess) {
+            passkeyModal.style.display = 'flex';
+        } else {
+            renderApps();
+        }
+
+        // Passkey Verification
+        submitPasskey.addEventListener('click', () => {
+            const passkey = passkeyInput.value.trim();
+            if (passkey === "TAOJ7") {
+                localStorage.setItem('appStoreAccess', 'granted');
+                passkeyModal.style.display = 'none';
+                renderApps();
+            } else {
+                window.location.href = "https://forms.gle/ucMoW34smF7KNk2R7";
+            }
+        });
+
+        // Search Functionality
+        searchInput.addEventListener('input', () => {
+            currentPage = 1;
+            filterApps();
+            renderApps();
+        });
+
+        // Pagination Controls
+        prevPageBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderApps();
+            }
+        });
+
+        nextPageBtn.addEventListener('click', () => {
+            const totalPages = Math.ceil(filteredApps.length / appsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderApps();
+            }
+        });
+
+        // Filter Apps based on search
+        function filterApps() {
+            const searchTerm = searchInput.value.toLowerCase();
+            if (!searchTerm) {
+                filteredApps = [...appsData];
+                return;
+            }
+
+            filteredApps = appsData.filter(app => 
+                app.title.toLowerCase().includes(searchTerm) ||
+                app.description.toLowerCase().includes(searchTerm) ||
+                app.category.toLowerCase().includes(searchTerm)
+            );
+        }
+
+        // Render Apps to the grid
+        function renderApps() {
+            // Sort by ID (higher IDs first)
+            const sortedApps = [...filteredApps].sort((a, b) => b.id - a.id);
+            
+            // Calculate pagination
+            const totalPages = Math.ceil(sortedApps.length / appsPerPage);
+            const startIndex = (currentPage - 1) * appsPerPage;
+            const paginatedApps = sortedApps.slice(startIndex, startIndex + appsPerPage);
+
+            // Update pagination controls
+            prevPageBtn.disabled = currentPage === 1;
+            nextPageBtn.disabled = currentPage === totalPages || totalPages === 0;
+            pageInfo.textContent = totalPages > 0 ? `Page ${currentPage} of ${totalPages}` : 'No apps found';
+
+            // Clear the grid
+            appsGrid.innerHTML = '';
+
+            // Add apps to the grid
+            paginatedApps.forEach(app => {
+                const appCard = document.createElement('div');
+                appCard.className = 'app-card animate__animated animate__fadeIn';
+                appCard.innerHTML = `
+                    <img src="${app.poster}" alt="${app.title}" class="app-poster">
+                    <div class="app-info">
+                        <h3 class="app-title">${app.title}</h3>
+                        <span class="app-category">${app.category}</span>
+                        <p class="app-description">${app.description}</p>
+                        <div class="app-downloads">
+                            <i class="fas fa-download"></i>
+                            <span>${app.downloads}</span>
+                        </div>
+                    </div>
+                `;
+
+                appCard.addEventListener('click', () => openDownloadModal(app));
+                appsGrid.appendChild(appCard);
+            });
+        }
+
+        // Download Modal Functions
+        function openDownloadModal(app) {
+            document.getElementById('modalAppPoster').src = app.poster;
+            document.getElementById('modalAppTitle').textContent = app.title;
+            document.getElementById('modalAppDescription').textContent = app.description;
+            document.getElementById('modalAppDownloads').textContent = app.downloads;
+            document.getElementById('modalDownloadLink').href = app.downloadLink;
+            
+            downloadModal.style.display = 'flex';
+        }
+
+        // Close modal when clicking X
+        document.querySelector('.close-btn').addEventListener('click', () => {
+            downloadModal.style.display = 'none';
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === downloadModal) {
+                downloadModal.style.display = 'none';
+            }
+            if (e.target === passkeyModal && hasAccess) {
+                passkeyModal.style.display = 'none';
+            }
+        });
+
+        // Allow Enter key to submit passkey
+        passkeyInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                submitPasskey.click();
+            }
+        });
+
+        // Initial render
+        renderApps();
+    </script>
+</body>
+      </html>
