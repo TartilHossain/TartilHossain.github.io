@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tartil App Store</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1d4ed8;
+            --primary-dark: #1e40af;
+            --primary-darker: #1e3a8a;
+            --secondary: #3b82f6;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --light-gray: #e2e8f0;
+            --white: #ffffff;
+            --red: #dc2626;
+            --red-light: #fee2e2;
+            --green: #16a34a;
+            --green-light: #dcfce7;
+            --pink: #ec4899;
+            --pink-light: #fce7f3;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+        }
+        
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white);
+            padding: 25px 0;
+            text-align: center;
+            margin-bottom: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            animation: gradientBG 8s ease infinite;
+            background-size: 200% 200%;
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        header h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            position: relative;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            letter-spacing: 1px;
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+        }
+        
+        /* Search Bar */
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 30px;
+            position: relative;
+            animation: fadeInDown 0.8s ease;
+        }
+        
+        .search-bar {
+            width: 100%;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            padding-left: 50px;
+            background-color: var(--white);
+        }
+        
+        .search-bar:focus {
+            outline: none;
+            box-shadow: 0 4px 15px rgba(29, 78, 216, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            font-size: 1.2rem;
+        }
+        
+        /* App Grid */
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .app-card {
+            background-color: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            border: 1px solid var(--light-gray);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            animation: fadeInUp 0.6s ease;
+        }
+        
+        .app-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
+            border-color: var(--secondary);
+        }
+        
+        .app-poster {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .app-info {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .app-info h3 {
+            margin-bottom: 12px;
+            color: var(--primary-dark);
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .app-info p {
+            color: var(--gray);
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .app-stats {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .app-stats i {
+            margin-right: 5px;
+            color: var(--primary);
+        }
+        
+        .app-category {
+            background-color: var(--light-gray);
+            color: var(--primary-dark);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-top: auto;
+            align-self: flex-start;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .app-card:hover .app-category {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+        
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 50px;
+            gap: 10px;
+            animation: fadeIn 0.8s ease;
+        }
+        
+        .pagination button {
+            padding: 10px 18px;
+            background-color: var(--white);
+            color: var(--primary);
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .pagination button:hover {
+            background-color: var(--primary);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(29, 78, 216, 0.2);
+        }
+        
+        .pagination button.active {
+            background-color: var(--primary-dark);
+            color: var(--white);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(29, 78, 216, 0.3);
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 25px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--white);
+            border-radius: 12px 12px 0 0;
+            box-shadow: 0 -10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        footer p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        /* Download Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-content {
+            background-color: var(--white);
+            padding: 35px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.2);
+            transform: scale(0.9);
+            opacity: 0;
+            animation: modalOpen 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        
+        @keyframes modalOpen {
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .modal-content h2 {
+            margin-bottom: 20px;
+            color: var(--primary-dark);
+            font-size: 1.8rem;
+        }
+        
+        .modal-content p {
+            margin-bottom: 25px;
+            color: var(--gray);
+            font-size: 1.05rem;
+        }
+        
+        .download-btn {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: var(--white);
+            border: none;
+            padding: 14px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.05rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(29, 78, 216, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .download-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0.1), rgba(255,255,255,0.3));
+            transform: translateX(-100%);
+            transition: transform 0.4s ease;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(29, 78, 216, 0.4);
+        }
+        
+        .download-btn:hover::after {
+            transform: translateX(100%);
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--gray);
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
+        .close-btn:hover {
+            color: var(--dark);
+            background-color: var(--light-gray);
+            transform: rotate(90deg);
+        }
+        
+        /* Enhanced Access Modal with Anime Girl */
+        .access-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .access-modal-container {
+            display: flex;
+            align-items: flex-end;
+            max-width: 900px;
+            width: 90%;
+            position: relative;
+        }
+        
+        .anime-girl {
+            width: 250px;
+            height: auto;
+            margin-right: -30px;
+            z-index: 2;
+            animation: float 6s ease-in-out infinite;
+            filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.2));
+        }
+        
+        .access-modal-content {
+            background: linear-gradient(145deg, #ffffff, #f0f4ff);
+            padding: 40px;
+            border-radius: 20px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: scale(0.9);
+            opacity: 0;
+            animation: modalOpen 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.4) forwards;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .access-modal-content::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(29, 78, 216, 0.1),
+                rgba(255, 255, 255, 0),
+                rgba(29, 78, 216, 0.1)
+            );
+            transform: rotate(30deg);
+            animation: shine 6s infinite linear;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(30deg); }
+            100% { transform: translateX(100%) rotate(30deg); }
+        }
+        
+        .access-modal-content h2 {
+            margin-bottom: 20px;
+            color: var(--primary-dark);
+            font-size: 1.8rem;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .access-modal-content p {
+            margin-bottom: 25px;
+            color: var(--gray);
+            font-size: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .access-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .passkey-input-container {
+            position: relative;
+        }
+        
+        .passkey-input {
+            width: 100%;
+            padding: 16px 20px 16px 50px;
+            border: 2px solid var(--light-gray);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .passkey-input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .passkey-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+        
+        .no-passkey {
+            margin-top: -10px;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .no-passkey a {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .no-passkey a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+        
+        .no-passkey a:hover {
+            color: var(--primary-dark);
+        }
+        
+        .no-passkey a:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+        
+        .submit-passkey-btn {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: var(--white);
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.4s ease;
+            box-shadow: 0 6px 15px rgba(29, 78, 216, 0.3);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .submit-passkey-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, var(--primary-dark), var(--primary));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: -1;
+        }
+        
+        .submit-passkey-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(29, 78, 216, 0.4);
+        }
+        
+        .submit-passkey-btn:hover::before {
+            opacity: 1;
+        }
+        
+        .submit-passkey-btn i {
+            margin-right: 8px;
+            animation: pulse 2s infinite ease-in-out;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        .pay-info {
+            margin-top: 25px;
+            padding: 15px;
+            border-radius: 12px;
+            background-color: var(--green-light);
+            color: var(--green);
+            font-weight: 600;
+            font-size: 0.95rem;
+            border-left: 4px solid var(--green);
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.6s ease;
+        }
+        
+        .pay-info i {
+            margin-right: 8px;
+            color: var(--green);
+        }
+        
+        /* Floating animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        /* Particles background */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+        
+        .particle {
+            position: absolute;
+            background-color: rgba(59, 130, 246, 0.2);
+            border-radius: 50%;
+            animation: floatParticle linear infinite;
+        }
+        
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
+            }
+            
+            header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .search-bar {
+                padding: 12px 20px 12px 50px;
+            }
+            
+            .access-modal-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .anime-girl {
+                width: 200px;
+                margin-right: 0;
+                margin-bottom: -50px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .app-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .pagination {
+                flex-wrap: wrap;
+            }
+            
+            .access-modal-content {
+                padding: 30px 20px;
+            }
+            
+            .anime-girl {
+                width: 180px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="animate__animated animate__fadeInDown">
+            <h1>TARTIL APP STORE</h1>
+            <p>Discover amazing apps and tools</p>
+        </header>
+        
+        <!-- Search Bar -->
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="search-bar" id="searchBar" placeholder="Search apps...">
+        </div>
+        
+        <div class="app-grid" id="appGrid">
+            <!-- Apps will be loaded here dynamically -->
+        </div>
+        
+        <div class="pagination" id="pagination">
+            <!-- Pagination buttons will be loaded here dynamically -->
+        </div>
+        
+        <footer class="animate__animated animate__fadeInUp">
+            <p>Site owner: Tartil Hossain</p>
+        </footer>
+    </div>
+    
+    <!-- Download Modal -->
+    <div class="modal" id="downloadModal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeDownloadModal">&times;</span>
+            <h2 id="modalAppTitle">App Title</h2>
+            <p>Click the button below to download this app</p>
+            <a id="downloadLink" href="#" class="download-btn animate__animated animate__pulse animate__infinite">
+                <i class="fas fa-download" style="margin-right: 8px;"></i> Download Now
+            </a>
+        </div>
+    </div>
+    
+    <!-- Enhanced Access Modal with Anime Girl -->
+    <div class="modal access-modal" id="accessModal">
+        <div class="particles" id="particles"></div>
+        <div class="access-modal-container">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9Z4KH84FuY6lz94oZH3BtgGuxA1AwTiZmQoOik8ehIzg2Tmvny6knXy-k&s=10" class="anime-girl animate__animated animate__fadeInLeft" alt="Anime girl">
+            <div class="access-modal-content">
+                <h2 class="animate__animated animate__fadeInDown">Welcome to Tartil App Store</h2>
+                <p class="animate__animated animate__fadeIn animate__delay-1s">Please enter your passkey to continue</p>
+                
+                <div class="access-form animate__animated animate__fadeIn animate__delay-1s">
+                    <div class="passkey-input-container">
+                        <i class="fas fa-key passkey-icon"></i>
+                        <input type="password" class="passkey-input" id="passkeyInput" placeholder="Enter your passkey">
+                    </div>
+                    
+                    <p class="no-passkey animate__animated animate__fadeIn animate__delay-1s">
+                        Don't have a passkey? <a href="https://forms.gle/ucMoW34smF7KNk2R7" target="_blank">Click Here</a>
+                    </p>
+                    
+                    <button id="submitPasskey" class="submit-passkey-btn animate__animated animate__pulse animate__infinite">
+                        <i class="fas fa-unlock-alt"></i> Unlock Access
+                    </button>
+                </div>
+                
+                <div class="pay-info animate__animated animate__fadeInUp animate__delay-2s">
+                    <i class="fas fa-money-bill-wave"></i>
+                    Pay to the number: <strong>01715783544 (TARTIL)</strong> to get passkey
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // App data with only Truecaller and Spotify as requested
+        const apps = [
+            {
+                id: 1,
+                title: "Truecaller",
+                category: "Communication",
+                poster: "https://filecr.com/_next/image/?url=https%3A%2F%2Fmedia.imgcdn.org%2Frepo%2F2023%2F03%2Ftruecaller%2F660ecc1758bd5-truecaller-Icon.webp&w=128&q=75",
+                description: "Caller ID, spam blocking & call recording",
+                downloads: "500M+",
+                downloadLink: "https://filenext.org/c5ecdea3e1e419a6?ref=9218ccb6b1b65f7e4a31fa79909613d9"
+            },
+            {
+                id: 2,
+                title: "Spotify",
+                category: "Music",
+                poster: "https://filecr.com/_next/image/?url=https%3A%2F%2Fmedia.imgcdn.org%2Frepo%2F2023%2F03%2Fspotify-music-and-podcasts%2F663c5e24e7a15-spotify-music-and-podcasts-Icon.webp&w=128&q=75",
+                description: "Music and podcasts streaming platform",
+                downloads: "1B+",
+                downloadLink: "https://filenext.org/4e67532265a45776?ref=69194501016626e4bc40b8aae2cb588d"
+            }
+        ];
+        
+        // Sort apps by ID (highest first) as requested
+        apps.sort((a, b) => b.id - a.id);
+        
+        // Pagination variables
+        const appsPerPage = 6;
+        let currentPage = 1;
+        let filteredApps = [...apps];
+        
+        // DOM elements
+        const appGrid = document.getElementById('appGrid');
+        const pagination = document.getElementById('pagination');
+        const downloadModal = document.getElementById('downloadModal');
+        const closeDownloadModal = document.getElementById('closeDownloadModal');
+        const modalAppTitle = document.getElementById('modalAppTitle');
+        const downloadLink = document.getElementById('downloadLink');
+        const accessModal = document.getElementById('accessModal');
+        const passkeyInput = document.getElementById('passkeyInput');
+        const submitPasskey = document.getElementById('submitPasskey');
+        const searchBar = document.getElementById('searchBar');
+        
+        // Display apps for current page
+        function displayApps() {
+            appGrid.innerHTML = '';
+            
+            const startIndex = (currentPage - 1) * appsPerPage;
+            const endIndex = startIndex + appsPerPage;
+            const appsToDisplay = filteredApps.slice(startIndex, endIndex);
+            
+            if (appsToDisplay.length === 0) {
+                appGrid.innerHTML = '<p class="no-results" style="grid-column: 1/-1; text-align: center; font-size: 1.2rem; color: var(--gray);">No apps found matching your search</p>';
+                pagination.innerHTML = '';
+                return;
+            }
+            
+            appsToDisplay.forEach((app, index) => {
+                const appCard = document.createElement('div');
+                appCard.className = 'app-card';
+                appCard.style.animationDelay = `${index * 0.1}s`;
+                appCard.innerHTML = `
+                    <img src="${app.poster}" alt="${app.title}" class="app-poster">
+                    <div class="app-info">
+                        <h3>${app.title}</h3>
+                        <p>${app.description}</p>
+                        <div class="app-stats">
+                            <i class="fas fa-download"></i> ${app.downloads} downloads
+                        </div>
+                        <span class="app-category">${app.category}</span>
+                    </div>
+                `;
+                
+                appCard.addEventListener('click', () => {
+                    openDownloadModal(app);
+                });
+                
+                appGrid.appendChild(appCard);
+            });
+            
+            renderPagination();
+        }
+        
+        // Render pagination buttons
+        function renderPagination() {
+            pagination.innerHTML = '';
+            
+            const totalPages = Math.ceil(filteredApps.length / appsPerPage);
+            
+            if (totalPages <= 1) return;
+            
+            // Previous button
+            if (currentPage > 1) {
+                const prevBtn = document.createElement('button');
+                prevBtn.textContent = 'Previous';
+                prevBtn.addEventListener('click', () => {
+                    currentPage--;
+                    displayApps();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+                pagination.appendChild(prevBtn);
+            }
+            
+            // Page buttons
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            
+            if (endPage - startPage + 1 < maxVisiblePages) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+            
+            if (startPage > 1) {
+                const firstBtn = document.createElement('button');
+                firstBtn.textContent = '1';
+                firstBtn.addEventListener('click', () => {
+                    currentPage = 1;
+                    displayApps();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+                pagination.appendChild(firstBtn);
+                
+                if (startPage > 2) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.textContent = '...';
+                    ellipsis.style.padding = '10px';
+                    pagination.appendChild(ellipsis);
+                }
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.textContent = i;
+                if (i === currentPage) {
+                    pageBtn.classList.add('active');
+                }
+                pageBtn.addEventListener('click', () => {
+                    currentPage = i;
+                    displayApps();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+                pagination.appendChild(pageBtn);
+            }
+            
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.textContent = '...';
+                    ellipsis.style.padding = '10px';
+                    pagination.appendChild(ellipsis);
+                }
+                
+                const lastBtn = document.createElement('button');
+                lastBtn.textContent = totalPages;
+                lastBtn.addEventListener('click', () => {
+                    currentPage = totalPages;
+                    displayApps();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+                pagination.appendChild(lastBtn);
+            }
+            
+            // Next button
+            if (currentPage < totalPages) {
+                const nextBtn = document.createElement('button');
+                nextBtn.textContent = 'Next';
+                nextBtn.addEventListener('click', () => {
+                    currentPage++;
+                    displayApps();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+                pagination.appendChild(nextBtn);
+            }
+        }
+        
+        // Open download modal with specific download links
+        function openDownloadModal(app) {
+            modalAppTitle.textContent = app.title;
+            downloadLink.href = app.downloadLink;
+            downloadModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Close modals
+        function closeModals() {
+            downloadModal.style.display = 'none';
+            accessModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Search functionality
+        function searchApps() {
+            const searchTerm = searchBar.value.toLowerCase();
+            filteredApps = apps.filter(app => 
+                app.title.toLowerCase().includes(searchTerm) || 
+                app.description.toLowerCase().includes(searchTerm) ||
+                app.category.toLowerCase().includes(searchTerm)
+            );
+            currentPage = 1;
+            displayApps();
+        }
+        
+        // Create particles for modal background
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 20;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random size between 5px and 15px
+                const size = Math.random() * 10 + 5;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Random position
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                
+                // Random animation duration between 10s and 20s
+                const duration = Math.random() * 10 + 10;
+                particle.style.animationDuration = `${duration}s`;
+                
+                // Random delay
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Event listeners
+        closeDownloadModal.addEventListener('click', closeModals);
+        searchBar.addEventListener('input', searchApps);
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === downloadModal || e.target === accessModal) {
+                closeModals();
+            }
+        });
+        
+        // Check passkey (exact match to "TAOJ7" as requested)
+        submitPasskey.addEventListener('click', () => {
+            if (passkeyInput.value.trim() === 'TAOJ7') {
+                closeModals();
+                displayApps();
+                localStorage.setItem('hasAccess', 'true');
+            } else {
+                // Redirect to form if passkey is incorrect
+                window.location.href = 'https://forms.gle/ucMoW34smF7KNk2R7';
+            }
+        });
+        
+        // Check if user already has access
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!localStorage.getItem('hasAccess')) {
+                createParticles();
+                accessModal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            } else {
+                displayApps();
+            }
+        });
+        
+        // Function to add new app (for your future use)
+        function addNewApp(title, category, description, posterUrl, downloadUrl) {
+            // Find the highest current ID
+            const maxId = apps.reduce((max, app) => Math.max(max, app.id), 0);
+            
+            const newApp = {
+                id: maxId + 1,
+                title,
+                category,
+                poster: posterUrl || `https://via.placeholder.com/300x200/1d4ed8/ffffff?text=${encodeURIComponent(title)}`,
+                description,
+                downloads: "0",
+                downloadLink: downloadUrl || "#"
+            };
+            
+            apps.unshift(newApp); // Add to beginning of array (will be sorted by ID)
+            apps.sort((a, b) => b.id - a.id); // Re-sort by ID
+            filteredApps = [...apps];
+            currentPage = 1; // Reset to first page
+            displayApps();
+        }
+    </script>
+</body>
+  </html>
