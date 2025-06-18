@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TARTIL APP STORE</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: #1e3a8a;
+            color: #ffffff;
+            text-align: center;
+            padding: 1.5rem;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            margin: 0;
+        }
+
+        main {
+            flex: 1;
+            padding: 80px 20px 60px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .app-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            padding: 15px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .app-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .app-card img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .app-card h3 {
+            font-size: 1.1rem;
+            margin: 10px 0;
+            color: #1e3a8a;
+        }
+
+        .pagination {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .pagination button {
+            padding: 8px 16px;
+            margin: 0 5px;
+            border: none;
+            background-color: #1e3a8a;
+            color: #ffffff;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+
+        .pagination button:hover {
+            background-color: #2563eb;
+        }
+
+        .pagination button:disabled {
+            background-color: #d1d5db;
+            cursor: not-allowed;
+        }
+
+        footer {
+            background-color: #1e3a8a;
+            color: #ffffff;
+            text-align: center;
+            padding: 1rem;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .popup-content {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 360px;
+            width: 90%;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .popup-content input {
+            padding: 10px;
+            margin: 10px 0;
+            width: 80%;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        .popup-content button, .popup-content a {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px 5px;
+            background-color: #1e3a8a;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .popup-content button:hover, .popup-content a:hover {
+            background-color: #2563eb;
+        }
+
+        .pay-instruction {
+            color: #dc2626;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .app-container {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 15px;
+            }
+
+            .app-card img {
+                height: 120px;
+            }
+
+            .app-card h3 {
+                font-size: 1rem;
+            }
+
+            header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>TARTIL APP STORE</h1>
+    </header>
+
+    <main>
+        <div class="app-container" id="appContainer"></div>
+    </main>
+
+    <div class="pagination" id="appContent"></div>
+
+    <footer>
+        <p>Site owner: Tartil Hossain</p>
+    </footer>
+
+    <!-- Passkey Popup -->
+    <div class="popup" id="passkeyPopup">
+        <div class="popup-content">
+            <h2>Enter Passkey</h2>
+            <input type="text" id="passwordkey" placeholder="Enter passkey">
+            <button onclick="verifyPasskey()">Submit</button>
+            <p id="passwordMessage" class="pay-instruction"></p>
+        </div>
+    </div>
+
+    <!-- Download Popup -->
+    <div class="popup" id="downloadPopup">
+        <div class="popup-content">
+            <h2>Download</h2>
+            <p id="appId"></p>
+            <a id="downloadBtn" href="#" target="_blank">Download</a>
+            <button onclick="closeDownloadPopup()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // App data with ID
+        let nextAppId = 3; // Next ID for new apps
+        let apps = [
+            {
+                id: 1,
+                name: "Truecaller",
+                poster: "https://via.placeholder.com/150?text=Truecaller",
+                link: "https://filenext.org/c5ecdea3e1e419a6?ref=9218ccb6b1b65f7e4a31fa79909613d9"
+            },
+            {
+                id: 2,
+                name: "Spotify",
+                poster: "https://via.placeholder.com/150?text=Spotify",
+                link: "https://filenext.org/4e67532265a45776?ref=69194501016626e4bc40b8aae2cb588d"
+            }
+        ];
+
+        // Pagination variables
+        const appsPerPage = 12;
+        let currentPage = 1;
+
+        // Display passkey popup on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('passkeyPopup').style.display = 'flex';
+            document.getElementById('passwordMessage').textContent = 'Pay to the number - 01715783544 (TARTIL) to get passkey.';
+        });
+
+        // Verify passkey
+        function verifyPasskey() {
+            const password = document.getElementById('passwordkey').value;
+            if (password === 'TAOJ7') {
+                document.getElementById('passkeyPopup').style.display = 'none';
+                displayApps();
+            } else {
+                document.getElementById('passwordMessage').textContent = 'Invalid passkey. Pay to the number - 01715783544 (TARTIL) to get passkey.';
+            }
+        }
+
+        // Display apps for the current page
+        function displayApps() {
+            // Sort apps by ID in descending order
+            apps.sort((a, b) => b.id - a.id);
+
+            const container = document.getElementById('appContainer');
+            container.innerHTML = '';
+
+            const startIndex = (currentPage - 1) * appsPerPage;
+            const endIndex = startIndex + appsPerPage;
+            const paginatedApps = apps.slice(startIndex, endIndex);
+
+            paginatedApps.forEach(app => {
+                const appCard = document.createElement('div');
+                appCard.className = 'app-card';
+                appCard.innerHTML = `
+                    <img src="${app.poster}" alt="${app.name}">
+                    <h3>${app.name}</h3>
+                `;
+                appCard.addEventListener('click', () => showDownloadPopup(app));
+                container.appendChild(appCard);
+            });
+
+            updatePagination();
+        }
+
+        // Show download popup
+        function showDownloadPopup(app) {
+            document.getElementById('appId').textContent = `Download ${app.name}`;
+            document.getElementById('downloadBtn').href = app.link;
+            document.getElementById('downloadPopup').style.display = 'flex';
+        }
+
+        // Close download popup
+        function closeDownloadPopup() {
+            document.getElementById('downloadPopup').style.display = 'none';
+        }
+
+        // Update pagination controls
+        function updatePagination() {
+            const totalPages = Math.ceil(apps.length / appsPerPage);
+            const pagination = document.getElementById('appContent');
+            pagination.innerHTML = '';
+
+            for (let i = 1; i <= totalPages; i++) {
+                const button = document.createElement('button');
+                button.textContent = i;
+                button.disabled = i === currentPage;
+                button.addEventListener('click', () => {
+                    currentPage = i;
+                    displayApps();
+                });
+                pagination.appendChild(button);
+            }
+        }
+
+        // Function to add a new app
+        function addApp(name, poster, link) {
+            apps.push({ id: nextAppId++, name, poster, link }); // Add with new ID
+            displayApps();
+        }
+
+        // Initial display
+        displayApps();
+    </script>
+</body>
+                                                       </html>
