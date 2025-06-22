@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mod Store by TARTIL</title>
+    <!-- CDNs -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <!-- Favicon and PWA -->
+    <link rel="icon" type="image/png" href="https://via.placeholder.com/32?text=MS">
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #3a0ca3, #4361ee);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            transition: background 0.3s, color 0.3s;
+        }
+        body.light-theme {
+            background: linear-gradient(135deg, #e0e7ff, #c3dafe);
+            color: #3a0ca3;
+        }
+        .hidden { display: none !important; }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: #4361ee;
+            color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            z-index: 1001;
+            animation: slideInRight 0.3s, slideOutRight 0.3s 2.7s forwards;
+        }
+        @keyframes slideInRight {
+            0% { transform: translateX(100%); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOutRight {
+            0% { transform: translateX(0); opacity: 1; }
+            100% { transform: translateX(100%); opacity: 0; }
+        }
+
+        /* Splash Screen */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #3a0ca3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            overflow: hidden;
+        }
+        .profile-pic {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 4px solid #4361ee;
+            animation: glow 3s infinite;
+            transition: transform 0.3s;
+        }
+        .profile-pic:hover {
+            transform: scale(1.1) rotate3d(1, 1, 0, 10deg);
+        }
+        .profile-pic.error {
+            background: #4cc9f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: #3a0ca3;
+        }
+        @keyframes glow {
+            0% { box-shadow: 0 0 10px #4361ee; }
+            33% { box-shadow: 0 0 15px #a100a1; }
+            66% { box-shadow: 0 0 20px #ff69b4; }
+            100% { box-shadow: 0 0 10px #4361ee; }
+        }
+        .welcome-text {
+            font-size: 2rem;
+            font-weight: 600;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin: 20px 0;
+        }
+        .welcome-text span {
+            display: inline-block;
+            animation: letterReveal 0.5s ease-out forwards;
+            animation-delay: calc(var(--i) * 0.05s);
+        }
+        @keyframes letterReveal {
+            0% { transform: translateY(20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        @media (max-width: 768px) {
+            .welcome-text { font-size: 1.5rem; }
+        }
+        .loading-button {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #3a0ca3, #4361ee);
+            border: none;
+            border-radius: 25px;
+            color: #fff;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        .loading-button:hover {
+            transform: scale(1.05);
+        }
+        .loading-button::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.5s, height 0.5s;
+        }
+        .loading-button:active::after {
+            width: 200px;
+            height: 200px;
+        }
+        .loading-percentage {
+            margin-left: 10px;
+        }
+        .particle {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 50%;
+            animation: particleFloat 5s infinite ease-in-out;
+        }
+        @keyframes particleFloat {
+            0% { transform: translate(0, 0); opacity: 0.5; }
+            50% { transform: translate(calc(var(--x) * 1px), calc(var(--y) * 1px)); opacity: 0.8; }
+            100% { transform: translate(0, 0); opacity: 0.5; }
+        }
+
+        /* Access Control Modal */
+        #access-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+        .modal-content {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            color: #fff;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: slideIn 0.5s ease-out;
+        }
+        @keyframes slideIn {
+            0% { transform: translateY(-100px) scale(0.8); opacity: 0; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        .modal-content input {
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            border: 1px solid #4361ee;
+            border-radius: 5px;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            transition: box-shadow 0.3s;
+        }
+        .modal-content input:focus {
+            box-shadow: 0 0 10px #4361ee;
+            outline: none;
+        }
+        .modal-content button {
+            padding: 10px 20px;
+            background: #4361ee;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            transition: transform 0.2s, background 0.3s;
+        }
+        .modal-content button:hover {
+            background: #3a0ca3;
+            transform: scale(1.1);
+        }
+
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            background: rgba(58,12,163,0.8);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 998;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #4361ee, #4cc9f0);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .theme-toggle:hover {
+            transform: rotate(360deg);
+        }
+        body.light-theme .theme-toggle { color: #3a0ca3; }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: none;
+        }
+        .search-bar {
+            width: 100%;
+            padding: 10px 20px;
+            margin: 10px 0;
+            border-radius: 25px;
+            border: 1px solid #4361ee;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            font-size: 1rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        body.light-theme .search-bar {
+            background: rgba(255,255,255,0.8);
+            color: #3a0ca3;
+        }
+        .search-bar:focus {
+            transform: scale(1.02);
+            box-shadow: 0 0 10px #4361ee;
+            outline: none;
+        }
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .tab {
+            padding: 10px 20px;
+            background: #4361ee;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            animation: slideInLeft 0.5s ease-out;
+            animation-delay: calc(var(--i) * 0.1s);
+        }
+        .tab:hover {
+            transform: scale(1.05);
+        }
+        .tab.active {
+            background: #3a0ca3;
+            transform: scale(1.1);
+        }
+        .sort-select {
+            padding: 10px;
+            border-radius: 5px;
+            background: #4361ee;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        body.light-theme .tab { background: #c3dafe; color: #3a0ca3; }
+        body.light-theme .tab.active { background: #a5b4fc; }
+        body.light-theme .sort-select { background: #c3dafe; color: #3a0ca3; }
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            position: relative;
+            min-height: 200px;
+        }
+        .loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.2rem;
+            animation: spin 1s infinite linear;
+        }
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        @media (max-width: 768px) {
+            .app-grid { grid-template-columns: 1fr; }
+            .controls { flex-direction: column; gap: 10px; }
+        }
+        @media (max-width: 480px) {
+            .header { flex-direction: column; gap: 10px; }
+            .search-bar { font-size: 0.9rem; }
+        }
+        .app-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.5s;
+        }
+        body.light-theme .app-card { background: rgba(255,255,255,0.8); }
+        .app-card:hover {
+            transform: translateY(-10px) scale(1.02);
+        }
+        .app-poster {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+            loading: lazy;
+        }
+        .app-poster.error {
+            background: #4cc9f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: #3a0ca3;
+        }
+        .app-info {
+            padding: 15px;
+            position: relative;
+        }
+        .app-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .app-category {
+            display: inline-block;
+            background: #4cc9f0;
+            color: #3a0ca3;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            animation: bounce 0.5s ease-out;
+        }
+        @keyframes bounce {
+            0% { transform: translateY(10px); opacity: 0; }
+            60% { transform: translateY(-5px); }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        .app-version {
+            color: #4cc9f0;
+            font-size: 0.9rem;
+        }
+        .app-description {
+            font-size: 0.9rem;
+            color: #ddd;
+            margin: 10px 0;
+        }
+        body.light-theme .app-description { color: #3a0ca3; }
+        .badge {
+            background: #ff69b4;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            animation: pulseBadge 2s infinite;
+        }
+        @keyframes pulseBadge {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .download-btn, .favorite-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: transform 0.3s, background 0.3s;
+            margin: 5px;
+        }
+        .download-btn {
+            background: #4361ee;
+            color: #fff;
+        }
+        .favorite-btn {
+            background: transparent;
+            color: #fff;
+            border: 1px solid #4361ee;
+        }
+        .favorite-btn.favorited {
+            background: #ff69b4;
+            border-color: #ff69b4;
+        }
+        .download-btn:hover, .favorite-btn:hover {
+            transform: scale(1.1);
+        }
+        body.light-theme .download-btn { background: #a5b4fc; }
+        body.light-theme .favorite-btn { color: #3a0ca3; border-color: #a5b4fc; }
+        body.light-theme .favorite-btn.favorited { background: #ff69b4; border-color: #ff69b4; }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .pagination button {
+            padding: 10px 15px;
+            background: #4361ee;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .pagination button:hover:not(:disabled) {
+            transform: scale(1.1);
+        }
+        .pagination button:disabled {
+            background: #3a0ca3;
+            cursor: not-allowed;
+        }
+        body.light-theme .pagination button { background: #a5b4fc; }
+        body.light-theme .pagination button:disabled { background: #c3dafe; }
+        .page-counter {
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <img src="https://i.ibb.co/vCczjHm8/IMG-20250107-195208-241.jpg" alt="Profile" class="profile-pic" onerror="this.classList.add('error'); this.src=''; this.innerText='Image Failed'">
+        <h1 class="welcome-text" aria-label="Welcome To The Mod Store by TARTIL">
+            <span style="--i:1">W</span><span style="--i:2">e</span><span style="--i:3">l</span><span style="--i:4">c</span><span style="--i:5">o</span><span style="--i:6">m</span><span style="--i:7">e</span>
+            <span style="--i:8"> </span><span style="--i:9">T</span><span style="--i:10">o</span><span style="--i:11"> </span><span style="--i:12">T</span><span style="--i:13">h</span><span style="--i:14">e</span>
+            <span style="--i:15"> </span><span style="--i:16">M</span><span style="--i:17">o</span><span style="--i:18">d</span><span style="--i:19"> </span><span style="--i:20">S</span><span style="--i:21">t</span><span style="--i:22">o</span><span style="--i:23">r</span><span style="--i:24">e</span>
+            <span style="--i:25"> </span><span style="--i:26">b</span><span style="--i:27">y</span><span style="--i:28"> </span><span style="--i:29">T</span><span style="--i:30">A</span><span style="--i:31">R</span><span style="--i:32">T</span><span style="--i:33">I</span><span style="--i:34">L</span>
+        </h1>
+        <button class="loading-button" aria-label="Loading progress">Loading <span class="loading-percentage">0%</span></button>
+    </div>
+
+    <!-- Access Control Modal -->
+    <div id="access-modal" role="dialog" aria-labelledby="modal-title">
+        <div class="modal-content">
+            <h2 id="modal-title">Access The Mod Store</h2>
+            <p>Send payment to 01715783544 (TARTIL) via bKash/Nagad</p>
+            <button onclick="window.open('https://forms.gle/EXAMPLE', '_blank')" aria-label="Get Passkey">Get Passkey</button>
+            <button onclick="showPasskeyInput()" aria-label="Enter Passkey">I Already Have a Passkey</button>
+            <div id="passkey-input" class="hidden">
+                <input type="text" id="passkey" placeholder="Enter Passkey" aria-label="Passkey Input">
+                <button onclick="verifyPasskey()" aria-label="Submit Passkey">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <header class="header">
+        <div class="logo">Mod Store</div>
+        <button class="theme-toggle" aria-label="Toggle Theme"><i class="fas fa-moon"></i></button>
+    </header>
+    <div class="container">
+        <input type="text" class="search-bar" placeholder="Search apps..." aria-label="Search apps" oninput="throttle(filterApps, 300)">
+        <div class="controls">
+            <div class="tabs" role="tablist">
+                <button class="tab active" onclick="filterByCategory('All')" role="tab" aria-selected="true">All</button>
+                <button class="tab" onclick="filterByCategory('Communication')" role="tab" aria-selected="false">Communication</button>
+                <button class="tab" onclick="filterByCategory('Music')" role="tab" aria-selected="false">Music</button>
+                <button class="tab" onclick="filterByCategory('Favorites')" role="tab" aria-selected="false">Favorites</button>
+            </div>
+            <select class="sort-select" onchange="sortApps(this.value)" aria-label="Sort apps">
+                <option value="title-asc">Title (A-Z)</option>
+                <option value="title-desc">Title (Z-A)</option>
+                <option value="version">Version</option>
+                <option value="popularity">Popularity</option>
+            </select>
+        </div>
+        <div class="app-grid" id="app-grid">
+            <div class="loading-spinner"><i class="fas fa-spinner"></i></div>
+        </div>
+        <div class="pagination">
+            <button onclick="prevPage()" id="prev-btn" aria-label="Previous Page"><i class="fas fa-chevron-left"></i></button>
+            <span class="page-counter" id="page-counter">Page 1 of 1</span>
+            <button onclick="nextPage()" id="next-btn" aria-label="Next Page"><i class="fas fa-chevron-right"></i></button>
+        </div>
+    </div>
+
+    <script>
+        // App Data
+        const apps = [
+            {
+                id: 2,
+                title: "Truecaller Premium Mod",
+                category: "Communication",
+                poster: "https://via.placeholder.com/300x200?text=Truecaller",
+                downloadLink: "https://dl.gamedva.top/truecaller",
+                description: "Advanced caller ID with premium features unlocked.",
+                version: "v15.18.6 MOD",
+                badges: ["trending"],
+                popularity: 90
+            },
+            {
+                id: 1,
+                title: "Spotify Premium Mod",
+                category: "Music",
+                poster: "https://via.placeholder.com/300x200?text=Spotify",
+                downloadLink: "https://dl.gamedva.top/spotify",
+                description: "Unlimited music streaming with no ads.",
+                version: "v9.0.56 MOD",
+                badges: ["trending"],
+                popularity: 95
+            }
+        ];
+
+        // Utility Functions
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function throttle(func, delay) {
+            let timeout;
+            return function (...args) {
+                if (!timeout) {
+                    timeout = setTimeout(() => {
+                        func.apply(this, args);
+                        timeout = null;
+                    }, delay);
+                }
+            };
+        }
+
+        // Mock Analytics
+        function trackEvent(action, category, label) {
+            console.log(`Analytics: ${action} - ${category} - ${label}`);
+        }
+
+        // Splash Screen Logic
+        let percentage = 0;
+        const loadingInterval = setInterval(() => {
+            try {
+                percentage += Math.floor(Math.random() * 10) + 1;
+                if (percentage > 100) percentage = 100;
+                const percentageElement = document.querySelector('.loading-percentage');
+                if (percentageElement) percentageElement.textContent = `${percentage}%`;
+                if (percentage === 100) {
+                    clearInterval(loadingInterval);
+                    setTimeout(() => {
+                        const splashScreen = document.getElementById('splash-screen');
+                        if (splashScreen) splashScreen.classList.add('hidden');
+                        checkAccess();
+                    }, 1000);
+                }
+            } catch (error) {
+                console.error('Splash screen error:', error);
+            }
+        }, 100);
+
+        // Create Particles
+        for (let i = 0; i < 20; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.top = `${Math.random() * 100}%`;
+            particle.style.setProperty('--x', Math.random() * 200 - 100);
+            particle.style.setProperty('--y', Math.random() * 200 - 100);
+            particle.style.animationDelay = `${Math.random() * 2}s`;
+            const splashScreen = document.getElementById('splash-screen');
+            if (splashScreen) splashScreen.appendChild(particle);
+        }
+
+        // Access Control
+        function checkAccess() {
+            try {
+                const access = localStorage.getItem('appStoreAccess') || 'denied';
+                const container = document.querySelector('.container');
+                const accessModal = document.getElementById('access-modal');
+                if (access === 'granted' && container && accessModal) {
+                    container.classList.remove('hidden');
+                    accessModal.classList.add('hidden');
+                    renderApps();
+                } else if (accessModal) {
+                    accessModal.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Access check error:', error);
+                showToast('Error loading access control', 'error');
+            }
+        }
+
+        function showPasskeyInput() {
+            const passkeyInput = document.getElementById('passkey-input');
+            if (passkeyInput) passkeyInput.classList.remove('hidden');
+        }
+
+        function verifyPasskey() {
+            try {
+                const passkeyInput = document.getElementById('passkey');
+                if (!passkeyInput) return;
+                const passkey = passkeyInput.value.trim();
+                if (passkey === 'TAOJ7') {
+                    localStorage.setItem('appStoreAccess', 'granted');
+                    const accessModal = document.getElementById('access-modal');
+                    const container = document.querySelector('.container');
+                    if (accessModal && container) {
+                        accessModal.classList.add('hidden');
+                        container.classList.remove('hidden');
+                        renderApps();
+                        showToast('Access granted!', 'success');
+                        trackEvent('Passkey Success', 'Access', 'Granted');
+                    }
+                } else {
+                    showToast('Invalid Passkey', 'error');
+                    trackEvent('Passkey Failure', 'Access', 'Invalid');
+                }
+            } catch (error) {
+                console.error('Passkey verification error:', error);
+                showToast('Error verifying passkey', 'error');
+            }
+        }
+
+        // Theme Toggle
+        document.querySelector('.theme-toggle').addEventListener('click', () => {
+            document.body.classList.toggle('light-theme');
+            const icon = document.querySelector('.theme-toggle i');
+            icon.className = document.body.classList.contains('light-theme') ? 'fas fa-sun' : 'fas fa-moon';
+            localStorage.setItem('theme', document.body.classList.contains('light-theme') ? 'light' : 'dark');
+            trackEvent('Theme Toggle', 'UI', document.body.classList.contains('light-theme') ? 'Light' : 'Dark');
+        });
+
+        // Load Theme
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-theme');
+            document.querySelector('.theme-toggle i').className = 'fas fa-sun';
+        }
+
+        // Favorites
+        function toggleFavorite(appId) {
+            try {
+                let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+                if (favorites.includes(appId)) {
+                    favorites = favorites.filter(id => id !== appId);
+                    showToast('Removed from Favorites', 'info');
+                } else {
+                    favorites.push(appId);
+                    showToast('Added to Favorites', 'success');
+                }
+                localStorage.setItem('favorites', JSON.stringify(favorites));
+                renderApps();
+                trackEvent('Favorite Toggle', 'App', appId);
+            } catch (error) {
+                console.error('Favorite toggle error:', error);
+                showToast('Error updating favorites', 'error');
+            }
+        }
+
+        // App Rendering and Pagination
+        let currentPage = 1;
+        const appsPerPage = 6;
+        let filteredApps = [...apps];
+
+        function renderApps() {
+            try {
+                const appGrid = document.getElementById('app-grid');
+                const loadingSpinner = document.querySelector('.loading-spinner');
+                if (!appGrid || !loadingSpinner) {
+                    showToast('Error loading apps', 'error');
+                    return;
+                }
+
+                loadingSpinner.classList.remove('hidden');
+                appGrid.innerHTML = '';
+
+                const start = (currentPage - 1) * appsPerPage;
+                const end = start + appsPerPage;
+                const paginatedApps = filteredApps.slice(start, end);
+
+                if (paginatedApps.length === 0) {
+                    appGrid.innerHTML = '<p style="text-align: center; grid-column: 1 / -1;">No apps found.</p>';
+                    loadingSpinner.classList.add('hidden');
+                    updatePagination();
+                    return;
+                }
+
+                const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+                paginatedApps.forEach((app, index) => {
+                    const card = document.createElement('div');
+                    card.classList.add('app-card');
+                    card.style.animationDelay = `${index * 0.1}s`;
+                    card.innerHTML = `
+                        <img src="${app.poster}" alt="${app.title}" class="app-poster" loading="lazy" onerror="this.classList.add('error'); this.src=''; this.innerText='Image Failed'">
+                        <div class="app-info">
+                            <h3 class="app-title">${app.title || 'Untitled'}</h3>
+                            <span class="app-category">${app.category || 'Unknown'}</span>
+                            <p class="app-description">${app.description || 'No description available.'}</p>
+                            <span class="app-version">${app.version || 'Unknown'}</span>
+                            ${app.badges && app.badges.length ? app.badges.map(badge => `<span class="badge">${badge}</span>`).join('') : ''}
+                            <div>
+                                <button class="download-btn" onclick="window.open('${app.downloadLink || '#'}', '_blank'); showToast('Download started!'); trackEvent('Download', 'App', '${app.id}')">Download</button>
+                                <button class="favorite-btn ${favorites.includes(app.id) ? 'favorited' : ''}" onclick="toggleFavorite(${app.id})" aria-label="Toggle Favorite">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    appGrid.appendChild(card);
+                });
+
+                loadingSpinner.classList.add('hidden');
+                updatePagination();
+            } catch (error) {
+                console.error('Render apps error:', error);
+                showToast('Error loading apps', 'error');
+                const appGrid = document.getElementById('app-grid');
+                if (appGrid) appGrid.innerHTML = '<p style="text-align: center; grid-column: 1 / -1;">Error loading apps. Please try again.</p>';
+            }
+        }
+
+        function updatePagination() {
+            try {
+                const totalPages = Math.max(1, Math.ceil(filteredApps.length / appsPerPage));
+                const pageCounter = document.getElementById('page-counter');
+                const prevBtn = document.getElementById('prev-btn');
+                const nextBtn = document.getElementById('next-btn');
+
+                if (pageCounter && prevBtn && nextBtn) {
+                    pageCounter.textContent = `Page ${currentPage} of ${totalPages}`;
+                    prevBtn.disabled = currentPage === 1;
+                    nextBtn.disabled = currentPage === totalPages;
+                }
+            } catch (error) {
+                console.error('Pagination update error:', error);
+            }
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderApps();
+                window.scrollTo({ top: document.querySelector('.app-grid').offsetTop, behavior: 'smooth' });
+                trackEvent('Pagination', 'Navigation', 'Previous');
+            }
+        }
+
+        function nextPage() {
+            const totalPages = Math.ceil(filteredApps.length / appsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderApps();
+                window.scrollTo({ top: document.querySelector('.app-grid').offsetTop, behavior: 'smooth' });
+                trackEvent('Pagination', 'Navigation', 'Next');
+            }
+        }
+
+        // Filtering and Sorting
+        function filterApps() {
+            try {
+                const searchBar = document.querySelector('.search-bar');
+                if (!searchBar) return;
+                const search = searchBar.value.toLowerCase();
+                filteredApps = apps.filter(app => app.title && app.title.toLowerCase().includes(search));
+                currentPage = 1;
+                renderApps();
+                trackEvent('Search', 'Filter', search);
+            } catch (error) {
+                console.error('Filter apps error:', error);
+                showToast('Error filtering apps', 'error');
+            }
+        }
+
+        function filterByCategory(category) {
+            try {
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.classList.remove('active');
+                    tab.setAttribute('aria-selected', 'false');
+                });
+                if (event && event.target) {
+                    event.target.classList.add('active');
+                    event.target.setAttribute('aria-selected', 'true');
+                }
+                if (category === 'Favorites') {
+                    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+                    filteredApps = apps.filter(app => favorites.includes(app.id));
+                } else {
+                    filteredApps = category === 'All' ? [...apps] : apps.filter(app => app.category === category);
+                }
+                currentPage = 1;
+                renderApps();
+                trackEvent('Category Filter', 'Filter', category);
+            } catch (error) {
+                console.error('Category filter error:', error);
+                showToast('Error filtering apps', 'error');
+            }
+        }
+
+        function sortApps(sortBy) {
+            try {
+                filteredApps.sort((a, b) => {
+                    if (sortBy === 'title-asc') return a.title.localeCompare(b.title);
+                    if (sortBy === 'title-desc') return b.title.localeCompare(a.title);
+                    if (sortBy === 'version') return b.version.localeCompare(a.version);
+                    if (sortBy === 'popularity') return (b.popularity || 0) - (a.popularity || 0);
+                    return 0;
+                });
+                currentPage = 1;
+                renderApps();
+                trackEvent('Sort', 'Filter', sortBy);
+            } catch (error) {
+                console.error('Sort apps error:', error);
+                showToast('Error sorting apps', 'error');
+            }
+        }
+
+        // Keyboard Navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && document.activeElement.classList.contains('tab')) {
+                e.preventDefault();
+                document.activeElement.click();
+            }
+        });
+
+        // PWA Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(error => {
+                console.error('Service Worker registration failed:', error);
+            });
+        }
+
+        // Initial Render
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                checkAccess();
+            } catch (error) {
+                console.error('Initial render error:', error);
+                showToast('Error loading page', 'error');
+            }
+        });
+    </script>
+</body>
+  </html>
