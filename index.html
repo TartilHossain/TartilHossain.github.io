@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appreciation Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --accent: #fd79a8;
+            --text: #2d3436;
+            --light: #f5f6fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            height: 100%;
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+            background: var(--light);
+        }
+
+        /* Splash Screen Styles */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: all 1s cubic-bezier(0.86, 0, 0.07, 1);
+            padding: 20px;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .splash-header {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 1rem;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            opacity: 0.8;
+            letter-spacing: 1px;
+            text-align: center;
+            width: 100%;
+            padding: 0 20px;
+        }
+
+        .splash-content {
+            text-align: center;
+            color: white;
+            width: 100%;
+            max-width: 500px;
+            margin-top: 40px;
+        }
+
+        .title {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            animation: float 3s ease-in-out infinite;
+            position: relative;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: white;
+            border-radius: 3px;
+            animation: pulseLine 2s infinite;
+        }
+
+        @keyframes pulseLine {
+            0% { width: 80px; opacity: 1; }
+            50% { width: 120px; opacity: 0.5; }
+            100% { width: 80px; opacity: 1; }
+        }
+
+        .selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .person-btn {
+            padding: 12px 15px;
+            border: none;
+            border-radius: 50px;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            color: white;
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .person-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.2), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+            z-index: -1;
+        }
+
+        .person-btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            background: rgba(255,255,255,0.25);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+        }
+
+        .person-btn:hover::before {
+            transform: translateX(100%);
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            display: none;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255,255,255,0.6);
+            border-radius: 50%;
+        }
+
+        .message-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100%;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .message-box {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            padding: 30px 20px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            transform: scale(0.9);
+            opacity: 0;
+            animation: messageAppear 0.8s forwards 0.3s;
+            position: relative;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        @keyframes messageAppear {
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .message-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--accent), var(--primary));
+        }
+
+        .person-name {
+            font-size: clamp(2rem, 8vw, 2.8rem);
+            margin-bottom: 15px;
+            color: var(--primary);
+            font-weight: 700;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .appreciation-message {
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            line-height: 1.6;
+            color: var(--text);
+            margin-bottom: 20px;
+        }
+
+        .signature {
+            font-style: italic;
+            color: var(--accent);
+            font-weight: 600;
+            margin-top: 15px;
+            font-size: clamp(0.9rem, 3vw, 1rem);
+        }
+
+        .floating-hearts {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .heart {
+            position: absolute;
+            opacity: 0;
+            font-size: 16px;
+            color: var(--accent);
+            animation: float-up 4s linear forwards;
+        }
+
+        @keyframes float-up {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) scale(1); opacity: 0; }
+        }
+
+        .back-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            background: var(--accent);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .selector {
+                grid-template-columns: 1fr;
+            }
+            
+            .person-btn {
+                padding: 10px 15px;
+                min-height: 45px;
+            }
+            
+            .message-box {
+                padding: 25px 15px;
+            }
+            
+            .back-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div class="splash-screen" id="splashScreen">
+        <div class="splash-header">Made by TARTIL</div>
+        <div class="splash-content">
+            <h1 class="title">Who Are You?</h1>
+            <div class="selector">
+                <button class="person-btn" data-person="ashim">Ashim Sir</button>
+                <button class="person-btn" data-person="tanvir">Tanvir</button>
+                <button class="person-btn" data-person="surjo">Surjo</button>
+                <button class="person-btn" data-person="protik">Protik</button>
+                <button class="person-btn" data-person="nabila">Nabila</button>
+                <button class="person-btn" data-person="mridu">Mridu</button>
+                <button class="person-btn" data-person="maya">Maya</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <div class="particles" id="particles"></div>
+        <div class="floating-hearts" id="hearts"></div>
+        <div class="message-container">
+            <div class="message-box">
+                <h2 class="person-name" id="personName">Person's Name</h2>
+                <p class="appreciation-message" id="appreciationMessage">Your personalized message will appear here.</p>
+                <p class="signature">- Made with appreciation by TARTIL</p>
+            </div>
+        </div>
+        <button class="back-btn" id="backBtn">←</button>
+    </div>
+
+    <script>
+        // Unique messages for each person
+        const messages = {
+            ashim: "Dear Ashim Sir, your wisdom and patience have shaped not just our knowledge but our character. The way you simplify complex concepts is nothing short of magical. You're not just a teacher, but a mentor who inspires us to reach beyond what we thought possible. Thank you for your unwavering dedication.",
+            tanvir: "Tanvir, your brilliant mind and quick wit make every study session enjoyable. You have this incredible ability to explain things in ways that just click. Your dedication to helping others understand difficult topics is truly admirable. The class wouldn't be the same without your insightful contributions!",
+            surjo: "Surjo, your quiet determination and sharp intellect are truly inspiring. You approach every challenge with such thoughtfulness and depth. I admire how you never give up until you fully understand something. Your perseverance motivates everyone around you to try harder and think deeper.",
+            protik: "Protik, your energy and humor bring so much life to our class! You have this unique talent for finding creative solutions to problems that leave the rest of us amazed. Even when topics get tough, your positive attitude keeps everyone motivated. Thanks for making learning fun!",
+            nabila: "Nabila, your attention to detail and thorough understanding of concepts is remarkable. Your notes are legendary! But more than that, I appreciate your willingness to help others without hesitation. Your kindness and intelligence make you such a valuable member of our class.",
+            mridu: "Mridu, your artistic approach to learning turns even the driest subjects into something beautiful. I'm constantly amazed by how you visualize complex ideas. Your unique perspective adds so much depth to our discussions. Keep sharing your creative way of seeing the world!",
+            maya: "Maya, your organizational skills and ability to break down complex topics are incredible. You have this gift for identifying the core of any problem. Your thoughtful questions often lead to discussions that help everyone understand better. Thank you for being such an engaged and insightful classmate!"
+        };
+
+        // Colors for each person's background
+        const colors = {
+            ashim: ["#1a2980", "#26d0ce"],
+            tanvir: ["#ff758c", "#ff7eb3"],
+            surjo: ["#11998e", "#38ef7d"],
+            protik: ["#654ea3", "#eaafc8"],
+            nabila: ["#f12711", "#f5af19"],
+            mridu: ["#8e2de2", "#4a00e0"],
+            maya: ["#00b09b", "#96c93d"]
+        };
+
+        // DOM elements
+        const splashScreen = document.getElementById('splashScreen');
+        const mainContent = document.getElementById('mainContent');
+        const backBtn = document.getElementById('backBtn');
+        const personName = document.getElementById('personName');
+        const appreciationMessage = document.getElementById('appreciationMessage');
+        const particlesContainer = document.getElementById('particles');
+        const heartsContainer = document.getElementById('hearts');
+        
+        // Animation variables
+        let heartInterval;
+        let currentColorScheme = null;
+
+        // Set up event listeners
+        document.querySelectorAll('.person-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const person = this.getAttribute('data-person');
+                showAppreciation(person);
+            });
+        });
+
+        backBtn.addEventListener('click', function() {
+            returnToSplash();
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (currentColorScheme && mainContent.style.display === 'block') {
+                createParticles();
+            }
+        });
+
+        function showAppreciation(person) {
+            // Animate splash screen exit
+            splashScreen.style.opacity = '0';
+            splashScreen.style.transform = 'scale(1.1)';
+            
+            setTimeout(() => {
+                // Hide splash screen
+                splashScreen.style.display = 'none';
+                
+                // Show main content
+                mainContent.style.display = 'block';
+                
+                // Set background gradient
+                document.body.style.background = `linear-gradient(135deg, ${colors[person][0]}, ${colors[person][1]})`;
+                currentColorScheme = person;
+                
+                // Set name and message
+                personName.textContent = formatName(person);
+                appreciationMessage.textContent = messages[person];
+                
+                // Create particles
+                createParticles();
+                
+                // Create floating hearts
+                startHearts();
+            }, 800);
+        }
+
+        function returnToSplash() {
+            // Clear animations
+            clearInterval(heartInterval);
+            heartsContainer.innerHTML = '';
+            particlesContainer.innerHTML = '';
+            
+            // Hide main content
+            mainContent.style.display = 'none';
+            
+            // Show splash screen
+            splashScreen.style.display = 'flex';
+            setTimeout(() => {
+                splashScreen.style.opacity = '1';
+                splashScreen.style.transform = 'scale(1)';
+            }, 50);
+        }
+
+        function formatName(name) {
+            if (name === "ashim") return "Ashim Sir";
+            return name.charAt(0).toUpperCase() + name.slice(1);
+        }
+
+        function createParticles() {
+            particlesContainer.innerHTML = '';
+            const particleCount = Math.min(Math.floor(window.innerWidth / 5), 100);
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random properties
+                const size = Math.random() * 4 + 1;
+                const posX = Math.random() * window.innerWidth;
+                const posY = Math.random() * window.innerHeight;
+                const opacity = Math.random() * 0.6 + 0.1;
+                const animationDuration = Math.random() * 15 + 10;
+                const delay = Math.random() * 5;
+                
+                // Apply styles
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${posX}px`;
+                particle.style.top = `${posY}px`;
+                particle.style.opacity = opacity;
+                particle.style.animation = `float-particle ${animationDuration}s linear ${delay}s infinite`;
+                
+                // Add to container
+                particlesContainer.appendChild(particle);
+            }
+            
+            // Add animation to CSS if not already present
+            if (!document.getElementById('particle-animation')) {
+                const style = document.createElement('style');
+                style.id = 'particle-animation';
+                style.innerHTML = `
+                    @keyframes float-particle {
+                        0% { transform: translateY(0) translateX(0); opacity: ${Math.random() * 0.6 + 0.1}; }
+                        50% { transform: translateY(-80px) translateX(10px); }
+                        100% { transform: translateY(-160px) translateX(0); opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+
+        function startHearts() {
+            // Clear any existing interval
+            clearInterval(heartInterval);
+            heartsContainer.innerHTML = '';
+            
+            heartInterval = setInterval(() => {
+                if (mainContent.style.display !== 'block') {
+                    clearInterval(heartInterval);
+                    return;
+                }
+                
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerHTML = '❤';
+                
+                // Random position
+                const posX = Math.random() * window.innerWidth;
+                heart.style.left = `${posX}px`;
+                heart.style.bottom = '-20px';
+                
+                // Random animation duration
+                const duration = Math.random() * 3 + 3;
+                heart.style.animationDuration = `${duration}s`;
+                
+                // Random size
+                const size = Math.random() * 0.5 + 0.5;
+                heart.style.transform = `scale(${size})`;
+                
+                heartsContainer.appendChild(heart);
+                
+                // Remove heart after animation
+                setTimeout(() => {
+                    if (heart.parentNode === heartsContainer) {
+                        heart.remove();
+                    }
+                }, duration * 1000);
+            }, 400);
+        }
+    </script>
+</body>
+  </html>
