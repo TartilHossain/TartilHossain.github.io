@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Would You Rather? by TARTIL</title>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --dark: #2d3436;
+            --light: #f5f6fa;
+            --accent: #fd79a8;
+            --correct: #00b894;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+        
+        .splash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeOut 1.5s ease-in-out 2s forwards;
+        }
+        
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+        
+        .splash-logo {
+            font-size: 4rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 1rem;
+            text-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+        
+        .made-by {
+            font-size: 1.5rem;
+            color: white;
+            opacity: 0;
+            animation: fadeIn 1s ease-in-out 1s forwards;
+        }
+        
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            flex: 1;
+        }
+        
+        .game-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .question {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: var(--dark);
+            line-height: 1.4;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .option {
+            background-color: var(--light);
+            border: 2px solid var(--secondary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option:hover {
+            background-color: var(--secondary);
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .option.selected {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .percentage {
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-weight: bold;
+            color: var(--dark);
+        }
+        
+        .option.selected .percentage {
+            color: white;
+        }
+        
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background-color: var(--accent);
+            transition: width 0.5s ease;
+        }
+        
+        .next-btn {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            display: block;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .next-btn:hover {
+            background-color: #e84393;
+            transform: translateY(-2px);
+        }
+        
+        .next-btn:disabled {
+            background-color: #dfe6e9;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            color: var(--dark);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+        
+        footer {
+            background-color: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: auto;
+        }
+        
+        .footer-text {
+            margin-bottom: 0.5rem;
+        }
+        
+        .highlight {
+            color: var(--accent);
+            font-weight: bold;
+        }
+        
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .question {
+                font-size: 1.5rem;
+            }
+            
+            .option {
+                padding: 1rem;
+            }
+            
+            .percentage {
+                position: static;
+                transform: none;
+                margin-top: 0.5rem;
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="splash">
+        <div class="splash-logo">Would You Rather?</div>
+        <div class="made-by">Made by TARTIL</div>
+    </div>
+    
+    <header>
+        <h1>Would You Rather?</h1>
+        <div class="tagline">Make tough choices and see what others picked!</div>
+    </header>
+    
+    <div class="container">
+        <div class="game-card">
+            <div class="question" id="question">Loading question...</div>
+            <div class="options" id="options">
+                <!-- Options will be inserted here by JavaScript -->
+            </div>
+            <button class="next-btn" id="next-btn" disabled>Next Question</button>
+            <div class="stats">
+                <span id="question-count">Question 1 of 100</span>
+                <span id="score">Score: 0</span>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="footer-text">Enjoying the game? Share with your friends!</div>
+        <div>Made with ❤️ by <span class="highlight">TARTIL</span></div>
+    </footer>
+    
+    <script>
+        // Questions database - 100 "Would You Rather" questions
+        const questions = [
+            {
+                question: "Would you rather have the ability to fly or be invisible?",
+                option1: "Fly",
+                option2: "Be invisible",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather live without the internet or without air conditioning/heating?",
+                option1: "Without internet",
+                option2: "Without AC/heating",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather always be 10 minutes late or always be 20 minutes early?",
+                option1: "Always 10 min late",
+                option2: "Always 20 min early",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather lose all your money or all your pictures?",
+                option1: "Lose all money",
+                option2: "Lose all pictures",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have unlimited sushi for life or unlimited tacos for life?",
+                option1: "Unlimited sushi",
+                option2: "Unlimited tacos",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be able to talk to animals or speak all foreign languages?",
+                option1: "Talk to animals",
+                option2: "Speak all languages",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather win the lottery or live twice as long?",
+                option1: "Win the lottery",
+                option2: "Live twice as long",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be without elbows or without knees?",
+                option1: "Without elbows",
+                option2: "Without knees",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather always have to sing instead of speak or always have to dance instead of walk?",
+                option1: "Sing instead of speak",
+                option2: "Dance instead of walk",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be able to control fire or water?",
+                option1: "Control fire",
+                option2: "Control water",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have a rewind button or a pause button on your life?",
+                option1: "Rewind button",
+                option2: "Pause button",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be able to talk with animals or speak all human languages?",
+                option1: "Talk with animals",
+                option2: "Speak all human languages",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have a personal chef or a personal chauffeur?",
+                option1: "Personal chef",
+                option2: "Personal chauffeur",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be able to teleport anywhere or be able to read minds?",
+                option1: "Teleport anywhere",
+                option2: "Read minds",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be famous when you are alive and forgotten when you die or unknown when you are alive but famous after you die?",
+                option1: "Famous now, forgotten later",
+                option2: "Unknown now, famous later",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather lose the ability to lie or believe everything you're told?",
+                option1: "Lose ability to lie",
+                option2: "Believe everything",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather never have to work again or never have to sleep again (and not feel tired)?",
+                option1: "Never work again",
+                option2: "Never sleep again",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have a rewind button or a fast-forward button on your life?",
+                option1: "Rewind button",
+                option2: "Fast-forward button",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be able to speak fluently every language in the world or be the best in the world at something of your choosing?",
+                option1: "Speak all languages",
+                option2: "Best at something",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have unlimited battery life on all your devices or have free WiFi wherever you go?",
+                option1: "Unlimited battery",
+                option2: "Free WiFi everywhere",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be able to see 10 minutes into your own future or 10 minutes into the future of anyone but yourself?",
+                option1: "See your own future",
+                option2: "See others' future",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be completely invisible for one day or be able to fly for one day?",
+                option1: "Invisible for a day",
+                option2: "Fly for a day",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be locked in a room with your worst enemy or locked in a room alone for a year?",
+                option1: "With worst enemy",
+                option2: "Alone for a year",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have an easy job working for someone else or work for yourself but work incredibly hard?",
+                option1: "Easy job for someone",
+                option2: "Hard self-employment",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be the most popular or the smartest person you know?",
+                option1: "Most popular",
+                option2: "Smartest",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be able to control animals (but not humans) with your mind or control electronics with your mind?",
+                option1: "Control animals",
+                option2: "Control electronics",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have everything you eat be too salty or not salty enough no matter how much salt you add?",
+                option1: "Everything too salty",
+                option2: "Never salty enough",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have hands that kept growing as you got older or feet that kept growing as you got older?",
+                option1: "Growing hands",
+                option2: "Growing feet",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have unlimited first class tickets or never have to pay for food at restaurants?",
+                option1: "Unlimited first class",
+                option2: "Free restaurant meals",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have a cute, friendly dog that stays a puppy forever or a big, mean dog that can protect you from anything?",
+                option1: "Forever puppy",
+                option2: "Protective big dog",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be able to see 10 years into your own future or 10 years into the future of the world?",
+                option1: "See your future",
+                option2: "See world's future",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have a personal maid or a personal chef?",
+                option1: "Personal maid",
+                option2: "Personal chef",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be able to breathe underwater or have the ability to fly?",
+                option1: "Breathe underwater",
+                option2: "Fly",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be forced to dance every time you heard music or be forced to sing along to any song you heard?",
+                option1: "Dance to music",
+                option2: "Sing along",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have a rewind button or a pause button for your life?",
+                option1: "Rewind button",
+                option2: "Pause button",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have a bottomless box of Legos or a bottomless gas tank?",
+                option1: "Bottomless Legos",
+                option2: "Bottomless gas",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be able to speak any language or be able to talk to animals?",
+                option1: "Speak any language",
+                option2: "Talk to animals",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be able to read minds or be able to teleport?",
+                option1: "Read minds",
+                option2: "Teleport",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be able to control fire or water?",
+                option1: "Control fire",
+                option2: "Control water",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be able to talk to the dead or be able to see into the future?",
+                option1: "Talk to the dead",
+                option2: "See the future",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be able to breathe underwater or fly?",
+                option1: "Breathe underwater",
+                option2: "Fly",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be a famous director or a famous actor?",
+                option1: "Famous director",
+                option2: "Famous actor",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be a genius and everyone thinks you're an idiot or be an idiot and everyone thinks you're a genius?",
+                option1: "Actual genius, thought idiot",
+                option2: "Actual idiot, thought genius",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be able to stop time or go back in time?",
+                option1: "Stop time",
+                option2: "Go back in time",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be able to talk to animals or speak all languages?",
+                option1: "Talk to animals",
+                option2: "Speak all languages",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be able to read minds or be invisible?",
+                option1: "Read minds",
+                option2: "Be invisible",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be able to teleport anywhere or be able to read minds?",
+                option1: "Teleport anywhere",
+                option2: "Read minds",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be forced to listen to the same 10 songs for the rest of your life or never be able to listen to music again?",
+                option1: "Same 10 songs forever",
+                option2: "No music ever again",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be happy but poor and unknown or rich and famous but miserable?",
+                option1: "Happy but poor",
+                option2: "Rich but miserable",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be homeless in a warm place or have a house in a place that's freezing all the time?",
+                option1: "Homeless in warmth",
+                option2: "Housed in freezing",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be invisible or be able to read minds?",
+                option1: "Be invisible",
+                option2: "Read minds",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be rich and ugly or poor and good looking?",
+                option1: "Rich and ugly",
+                option2: "Poor and good looking",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be stranded on an island alone or with someone who talks incessantly?",
+                option1: "Alone",
+                option2: "With chatterbox",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be the funniest person in the room or the most intelligent?",
+                option1: "Funniest",
+                option2: "Most intelligent",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be the most popular or the smartest person you know?",
+                option1: "Most popular",
+                option2: "Smartest",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be transported 500 years into the past or 500 years into the future?",
+                option1: "500 years past",
+                option2: "500 years future",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather be unable to use search engines or unable to use social media?",
+                option1: "No search engines",
+                option2: "No social media",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather die in 20 years with no regrets or die in 50 years with many regrets?",
+                option1: "20 years, no regrets",
+                option2: "50 years, many regrets",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather die peacefully in your sleep at 60 or painfully at 90 but accomplish everything you ever wanted?",
+                option1: "Peaceful at 60",
+                option2: "Painful at 90, accomplished",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather find your true love or a suitcase with five million dollars inside?",
+                option1: "Find true love",
+                option2: "Find $5 million",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather give up bathing for a month or give up the internet for a month?",
+                option1: "No bathing for a month",
+                option2: "No internet for a month",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather go to jail for a year or lose a year off your life?",
+                option1: "Jail for a year",
+                option2: "Lose a year of life",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have a bottomless box of Legos or a bottomless gas tank?",
+                option1: "Bottomless Legos",
+                option2: "Bottomless gas",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have a flying carpet or a car that can drive underwater?",
+                option1: "Flying carpet",
+                option2: "Underwater car",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have a home with no electricity or a home with no running water?",
+                option1: "No electricity",
+                option2: "No running water",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have a million dollars or a million friends?",
+                option1: "Million dollars",
+                option2: "Million friends",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have a photographic memory or an IQ of 200?",
+                option1: "Photographic memory",
+                option2: "IQ of 200",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have a private jet or a private island?",
+                option1: "Private jet",
+                option2: "Private island",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have a rewind button or a pause button for your life?",
+                option1: "Rewind button",
+                option2: "Pause button",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have a time machine that only goes back in time or one that only goes forward?",
+                option1: "Only goes back",
+                option2: "Only goes forward",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have all traffic lights you approach be green or never have to stand in line again?",
+                option1: "Always green lights",
+                option2: "Never stand in line",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have an unlimited first class plane ticket or unlimited money to spend on food?",
+                option1: "Unlimited first class",
+                option2: "Unlimited food money",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have everyone you know be able to read your thoughts or for everyone you know to have access to your internet history?",
+                option1: "Read your thoughts",
+                option2: "Access internet history",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have fame and money or love and happiness?",
+                option1: "Fame and money",
+                option2: "Love and happiness",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have free Wi-Fi wherever you go or be able to drink unlimited free coffee at any coffee shop?",
+                option1: "Free Wi-Fi everywhere",
+                option2: "Unlimited free coffee",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have no one show up to your wedding or to your funeral?",
+                option1: "No one at wedding",
+                option2: "No one at funeral",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have people spread horrible lies about you or have people spread horrible truths about you?",
+                option1: "Horrible lies",
+                option2: "Horrible truths",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather have to read aloud every word you read or sing everything you say out loud?",
+                option1: "Read aloud everything",
+                option2: "Sing everything",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather know how you die or when you die?",
+                option1: "Know how you die",
+                option2: "Know when you die",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather know it all or have it all?",
+                option1: "Know it all",
+                option2: "Have it all",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather live in a haunted mansion or live in a un-haunted cottage?",
+                option1: "Haunted mansion",
+                option2: "Un-haunted cottage",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather live in the wilderness far from civilization or live on the streets of a city as a homeless person?",
+                option1: "Wilderness",
+                option2: "Homeless in city",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather live without music or live without TV?",
+                option1: "No music",
+                option2: "No TV",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather lose all of your money or all of your pictures?",
+                option1: "Lose all money",
+                option2: "Lose all pictures",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather never be able to eat meat or never be able to eat vegetables?",
+                option1: "Never eat meat",
+                option2: "Never eat vegetables",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather never have Internet access again or never have air conditioning again?",
+                option1: "No Internet ever",
+                option2: "No AC ever",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather never use social media sites / apps again or never watch another movie or TV show?",
+                option1: "No social media",
+                option2: "No movies/TV",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather only be able to watch movies you hate or only be able to watch TV shows you hate?",
+                option1: "Only bad movies",
+                option2: "Only bad TV shows",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather own a boat or own a plane?",
+                option1: "Boat",
+                option2: "Plane",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather people always assume the worst about you or people always assume the best about you?",
+                option1: "Assume the worst",
+                option2: "Assume the best",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather play Game of Thrones or The Walking Dead in real life?",
+                option1: "Game of Thrones",
+                option2: "The Walking Dead",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather read minds or accurately predict the future?",
+                option1: "Read minds",
+                option2: "Predict future",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather ride a horse to work or ride an elephant to work?",
+                option1: "Horse",
+                option2: "Elephant",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather see the world but live in poverty or stay in one place but live rich?",
+                option1: "See world, poor",
+                option2: "Stay put, rich",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather spend the rest of your life with a sailboat as your home or an RV as your home?",
+                option1: "Sailboat home",
+                option2: "RV home",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather stop aging at 30 or at 50?",
+                option1: "Stop at 30",
+                option2: "Stop at 50",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather take amazing selfies but look terrible in all other photos or be photogenic everywhere but take terrible selfies?",
+                option1: "Great selfies, bad others",
+                option2: "Bad selfies, great others",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather travel the world for free for a year or have $100,000 to spend however you please?",
+                option1: "Free world travel",
+                option2: "$100,000 cash",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather wear the same socks for a month or the same underwear for a week?",
+                option1: "Same socks for month",
+                option2: "Same underwear for week",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather work a high stress job that you love or a no stress job that you hate?",
+                option1: "Stressful job you love",
+                option2: "Easy job you hate",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            },
+            {
+                question: "Would you rather your shirts be always two sizes too big or one size too small?",
+                option1: "Two sizes too big",
+                option2: "One size too small",
+                percentage1: Math.floor(Math.random() * 100),
+                percentage2: Math.floor(Math.random() * 100)
+            }
+        ];
+        
+        // Game state
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedOption = null;
+        
+        // DOM elements
+        const questionElement = document.getElementById('question');
+        const optionsElement = document.getElementById('options');
+        const nextButton = document.getElementById('next-btn');
+        const questionCountElement = document.getElementById('question-count');
+        const scoreElement = document.getElementById('score');
+        
+        // Initialize the game
+        function startGame() {
+            currentQuestionIndex = 0;
+            score = 0;
+            showQuestion();
+        }
+        
+        // Display current question
+        function showQuestion() {
+            resetState();
+            const currentQuestion = questions[currentQuestionIndex];
+            questionElement.textContent = currentQuestion.question;
+            
+            // Create option elements
+            const option1 = createOptionElement(currentQuestion.option1, currentQuestion.percentage1, 'option1');
+            const option2 = createOptionElement(currentQuestion.option2, currentQuestion.percentage2, 'option2');
+            
+            optionsElement.appendChild(option1);
+            optionsElement.appendChild(option2);
+            
+            // Update question count
+            questionCountElement.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+            scoreElement.textContent = `Score: ${score}`;
+        }
+        
+        // Create an option element
+        function createOptionElement(optionText, percentage, optionId) {
+            const optionElement = document.createElement('div');
+            optionElement.classList.add('option');
+            optionElement.id = optionId;
+            optionElement.textContent = optionText;
+            
+            // Add percentage
+            const percentageElement = document.createElement('span');
+            percentageElement.classList.add('percentage');
+            percentageElement.textContent = `${percentage}%`;
+            optionElement.appendChild(percentageElement);
+            
+            // Add progress bar
+            const progressBar = document.createElement('div');
+            progressBar.classList.add('progress-bar');
+            progressBar.style.width = `${percentage}%`;
+            optionElement.appendChild(progressBar);
+            
+            // Add click event
+            optionElement.addEventListener('click', () => selectOption(optionElement, optionId));
+            
+            return optionElement;
+        }
+        
+        // Reset the game state for new question
+        function resetState() {
+            selectedOption = null;
+            nextButton.disabled = true;
+            
+            // Clear options
+            while (optionsElement.firstChild) {
+                optionsElement.removeChild(optionsElement.firstChild);
+            }
+        }
+        
+        // Handle option selection
+        function selectOption(optionElement, optionId) {
+            // Deselect all options first
+            const allOptions = document.querySelectorAll('.option');
+            allOptions.forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Select clicked option
+            optionElement.classList.add('selected');
+            selectedOption = optionId;
+            nextButton.disabled = false;
+            
+            // Update score if they selected the more popular option
+            const currentQuestion = questions[currentQuestionIndex];
+            if ((optionId === 'option1' && currentQuestion.percentage1 > currentQuestion.percentage2) ||
+                (optionId === 'option2' && currentQuestion.percentage2 > currentQuestion.percentage1)) {
+                score++;
+                scoreElement.textContent = `Score: ${score}`;
+            }
+        }
+        
+        // Move to next question
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+            } else {
+                // Game over
+                questionElement.textContent = `Game Over! Your final score is ${score}/${questions.length}`;
+                resetState();
+                nextButton.textContent = 'Play Again';
+                nextButton.disabled = false;
+                nextButton.addEventListener('click', startGame, { once: true });
+            }
+        }
+        
+        // Event listeners
+        nextButton.addEventListener('click', nextQuestion);
+        
+        // Start the game
+        startGame();
+    </script>
+</body>
+  </html>
