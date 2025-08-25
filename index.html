@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok-Style Music Player</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            overflow: hidden;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            height: 100vh;
+        }
+        
+        /* Loading Screen */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease-out;
+        }
+        
+        .loading-text {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            margin-bottom: 2rem;
+            text-align: center;
+            animation: pulse 1.5s infinite alternate;
+        }
+        
+        .spinner {
+            width: 80px;
+            height: 80px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        /* Main Content */
+        #music-player {
+            display: none;
+            height: 100vh;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .song-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.5s ease;
+        }
+        
+        .song {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 2rem;
+            color: white;
+        }
+        
+        .song-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(2px);
+        }
+        
+        .song-info {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            margin-bottom: 6rem;
+        }
+        
+        .song-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #ff8a00, #da1b60);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .song-artist {
+            font-size: 1.5rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+        
+        /* Controls */
+        .controls {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .play-pause {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+        
+        .play-pause:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .play-pause i {
+            font-size: 2rem;
+            color: white;
+        }
+        
+        .progress-container {
+            width: 80%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, #ff8a00, #da1b60);
+            border-radius: 10px;
+            transition: width 0.1s linear;
+        }
+        
+        /* Like Button */
+        .like-btn {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            z-index: 3;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .like-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .like-btn i {
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .like-btn.liked i {
+            color: #ff2e63;
+        }
+        
+        /* Visualizer */
+        .visualizer {
+            position: absolute;
+            bottom: 120px;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 4px;
+            padding: 0 2rem;
+            z-index: 2;
+        }
+        
+        .bar {
+            width: 10px;
+            background: linear-gradient(to top, #ff8a00, #da1b60);
+            border-radius: 3px 3px 0 0;
+            height: 20px;
+            transition: height 0.2s ease;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .song-title {
+                font-size: 2rem;
+            }
+            
+            .song-artist {
+                font-size: 1.2rem;
+            }
+            
+            .play-pause {
+                width: 70px;
+                height: 70px;
+            }
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0% {
+                opacity: 0.8;
+                transform: scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loading-text">This website is made by Tartil Hossain</div>
+        <div class="spinner"></div>
+    </div>
+    
+    <!-- Music Player -->
+    <div id="music-player">
+        <div class="song-container" id="song-container"></div>
+        
+        <div class="visualizer" id="visualizer">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+        
+        <div class="like-btn" id="like-btn">
+            <i class="far fa-heart"></i>
+        </div>
+        
+        <div class="controls">
+            <div class="play-pause" id="play-pause">
+                <i class="fas fa-play"></i>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Song data
+        const songs = [
+            {
+                title: "Oh Mama TETEMA",
+                artist: "Nora Fatehi",
+                audio: "https://pagalfree.com/download/320-Oh%20Mama%20TETEMA%20-%20Nora%20Fatehi%20320%20Kbps.mp3",
+                cover: "https://pagalfree.com/images/128Oh%20Mama%20TETEMA%20-%20Nora%20Fatehi%20128%20Kbps.jpg",
+                liked: false
+            },
+            {
+                title: "Janaab e Aali",
+                artist: "WAR 2",
+                audio: "https://pagalfree.com/download/320-Janaab%20e%20Aali%20-%20WAR%202%20320%20Kbps.mp3",
+                cover: "https://pagalfree.com/images/128Janaab%20e%20Aali%20-%20WAR%202%20128%20Kbps.jpg",
+                liked: false
+            }
+        ];
+        
+        // DOM Elements
+        const loadingScreen = document.getElementById('loading-screen');
+        const musicPlayer = document.getElementById('music-player');
+        const songContainer = document.getElementById('song-container');
+        const playPauseBtn = document.getElementById('play-pause');
+        const progressBar = document.getElementById('progress-bar');
+        const likeBtn = document.getElementById('like-btn');
+        const visualizer = document.getElementById('visualizer');
+        const bars = document.querySelectorAll('.bar');
+        
+        // State variables
+        let currentSongIndex = 0;
+        let currentAudio = null;
+        let isPlaying = false;
+        let audioContext = null;
+        let analyser = null;
+        let dataArray = null;
+        let source = null;
+        let animationFrame = null;
+        
+        // Initialize the player
+        function init() {
+            // Shuffle songs array for random order
+            shuffleSongs();
+            
+            // Create song elements
+            songs.forEach((song, index) => {
+                const songElement = document.createElement('div');
+                songElement.className = 'song';
+                songElement.style.backgroundImage = `url(${song.cover})`;
+                songElement.innerHTML = `
+                    <div class="song-overlay"></div>
+                    <div class="song-info">
+                        <h2 class="song-title">${song.title}</h2>
+                        <p class="song-artist">${song.artist}</p>
+                    </div>
+                `;
+                songContainer.appendChild(songElement);
+            });
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Load the first song
+            loadSong(currentSongIndex);
+        }
+        
+        // Shuffle the songs array
+        function shuffleSongs() {
+            for (let i = songs.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [songs[i], songs[j]] = [songs[j], songs[i]];
+            }
+        }
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            // Play/Pause button
+            playPauseBtn.addEventListener('click', togglePlayPause);
+            
+            // Like button
+            likeBtn.addEventListener('click', toggleLike);
+            
+            // Keyboard controls
+            document.addEventListener('keydown', handleKeyDown);
+            
+            // Touch swipe for mobile
+            let touchStartX = 0;
+            let touchEndX = 0;
+            
+            document.addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].screenX;
+            });
+            
+            document.addEventListener('touchend', e => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            });
+        }
+        
+        // Handle keyboard controls
+        function handleKeyDown(e) {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                togglePlayPause();
+            } else if (e.code === 'ArrowRight') {
+                e.preventDefault();
+                nextSong();
+            } else if (e.code === 'ArrowLeft') {
+                e.preventDefault();
+                prevSong();
+            }
+        }
+        
+        // Handle swipe for mobile
+        function handleSwipe() {
+            const minSwipeDistance = 50;
+            
+            if (touchEndX < touchStartX && touchStartX - touchEndX > minSwipeDistance) {
+                nextSong();
+            } else if (touchEndX > touchStartX && touchEndX - touchStartX > minSwipeDistance) {
+                prevSong();
+            }
+        }
+        
+        // Load a song
+        function loadSong(index) {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.removeEventListener('timeupdate', updateProgress);
+                currentAudio.removeEventListener('ended', handleSongEnd);
+            }
+            
+            // Reset visualizer animation
+            if (animationFrame) {
+                cancelAnimationFrame(animationFrame);
+            }
+            
+            // Create new audio element
+            currentAudio = new Audio(songs[index].audio);
+            currentAudio.addEventListener('timeupdate', updateProgress);
+            currentAudio.addEventListener('ended', handleSongEnd);
+            
+            // Update UI
+            updateSongInfo();
+            
+            // Set up audio visualizer
+            setupVisualizer();
+            
+            // Auto-play if was playing before
+            if (isPlaying) {
+                currentAudio.play();
+                playPauseBtn.querySelector('i').className = 'fas fa-pause';
+                animateVisualizer();
+            }
+        }
+        
+        // Toggle play/pause
+        function togglePlayPause() {
+            if (isPlaying) {
+                pauseSong();
+            } else {
+                playSong();
+            }
+        }
+        
+        // Play song
+        function playSong() {
+            if (currentAudio) {
+                currentAudio.play();
+                isPlaying = true;
+                playPauseBtn.querySelector('i').className = 'fas fa-pause';
+                animateVisualizer();
+            }
+        }
+        
+        // Pause song
+        function pauseSong() {
+            if (currentAudio) {
+                currentAudio.pause();
+                isPlaying = false;
+                playPauseBtn.querySelector('i').className = 'fas fa-play';
+                
+                if (animationFrame) {
+                    cancelAnimationFrame(animationFrame);
+                }
+            }
+        }
+        
+        // Next song
+        function nextSong() {
+            currentSongIndex = (currentSongIndex + 1) % songs.length;
+            songContainer.style.transform = `translateX(-${currentSongIndex * 100}%)`;
+            loadSong(currentSongIndex);
+            if (isPlaying) playSong();
+        }
+        
+        // Previous song
+        function prevSong() {
+            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+            songContainer.style.transform = `translateX(-${currentSongIndex * 100}%)`;
+            loadSong(currentSongIndex);
+            if (isPlaying) playSong();
+        }
+        
+        // Handle song end
+        function handleSongEnd() {
+            nextSong();
+        }
+        
+        // Update progress bar
+        function updateProgress() {
+            if (currentAudio) {
+                const percent = (currentAudio.currentTime / currentAudio.duration) * 100;
+                progressBar.style.width = `${percent}%`;
+            }
+        }
+        
+        // Toggle like
+        function toggleLike() {
+            songs[currentSongIndex].liked = !songs[currentSongIndex].liked;
+            if (songs[currentSongIndex].liked) {
+                likeBtn.classList.add('liked');
+                likeBtn.querySelector('i').className = 'fas fa-heart';
+            } else {
+                likeBtn.classList.remove('liked');
+                likeBtn.querySelector('i').className = 'far fa-heart';
+            }
+        }
+        
+        // Update song info
+        function updateSongInfo() {
+            // Update like button
+            if (songs[currentSongIndex].liked) {
+                likeBtn.classList.add('liked');
+                likeBtn.querySelector('i').className = 'fas fa-heart';
+            } else {
+                likeBtn.classList.remove('liked');
+                likeBtn.querySelector('i').className = 'far fa-heart';
+            }
+        }
+        
+        // Set up audio visualizer
+        function setupVisualizer() {
+            // Create audio context if not exists
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            
+            if (source) {
+                source.disconnect();
+            }
+            
+            // Create analyser
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 256;
+            
+            // Create source
+            source = audioContext.createMediaElementSource(currentAudio);
+            source.connect(analyser);
+            analyser.connect(audioContext.destination);
+            
+            // Create data array
+            dataArray = new Uint8Array(analyser.frequencyBinCount);
+        }
+        
+        // Animate visualizer
+        function animateVisualizer() {
+            if (!analyser) return;
+            
+            analyser.getByteFrequencyData(dataArray);
+            
+            // Update bars
+            for (let i = 0; i < bars.length; i++) {
+                const value = dataArray[i * 2] / 255;
+                const height = value * 60;
+                bars[i].style.height = `${height}px`;
+            }
+            
+            animationFrame = requestAnimationFrame(animateVisualizer);
+        }
+        
+        // Hide loading screen after 4 seconds
+        setTimeout(() => {
+            loadingScreen.style.opacity = '0';
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+                musicPlayer.style.display = 'block';
+                init();
+            }, 500);
+        }, 4000);
+    </script>
+</body>
+</html>
